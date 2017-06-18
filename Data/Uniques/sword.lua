@@ -184,7 +184,7 @@ Implicits: 2
 {variant:2}40% increased Accuracy Rating
 Adds (65-75) to (110-130) Physical Damage
 100% increased Burning Damage if you've Ignited an Enemy Recently
-Recovery 1% of Maximum Life when you Ignite an Enemy
+Recover 1% of Maximum Life when you Ignite an Enemy
 100% increased Melee Physical Damage against Ignited Enemies
 ]],[[
 Rebuke of the Vaal
@@ -355,7 +355,7 @@ Adds (40–60) to (90–110) Cold Damage to Spells
 (8-14)% increased Attack Speed
 +257 Intelligence Requirement
 60% increased Critical Strike Chance against Chilled Enemies
-Cast a Socketed Cold Skill on Melee Critical Strike
+Cast a Socketed Cold Spell on Melee Critical Strike
 ]],[[
 Daresso's Passion
 Estoc
@@ -465,9 +465,9 @@ Implicits: 2
 {variant:1}18% increased Accuracy Rating
 {variant:2}40% increased Accuracy Rating
 +1 to Level of Active Socketed Skill Gems
-(60-80)% increased Physical Damage
+(40-60)% increased Physical Damage
 Adds (60-65) to (90-105) Chaos Damage
-{variant:2}Adds 1 to 2 Physical Damage per Level
+{variant:2}Adds 1 to 2 Physical Damage to Attacks per Level
 {variant:1}+1 Life gained on Kill per Level
 {variant:1}1% increased Elemental Damage per Level
 1% increased Chaos Damage per Level

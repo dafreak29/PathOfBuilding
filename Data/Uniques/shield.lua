@@ -3,6 +3,17 @@
 return {
 -- Shield: Armour
 [[
+Ahn's Heritage
+Colossal Tower Shield
+Requires Level 67, 159 Str
+(50-100)% increased Armour
++(60-80) to maximum Life
+-1 to maximum Endurance Charges
+-10% to maximum Block Chance
++6% Chance to Block
++3% to all maximum Resistances while you have no Endurance Charges
+You have Onslaught while at maximum Endurance Charges
+]],[[
 The Anticipation
 Ezomyte Tower Shield
 League: Breach
@@ -31,7 +42,7 @@ Variant: Pre 2.6.0
 Variant: Current
 Requires Level 61, 159 Str
 {variant:2}Adds (7-10) to (15-25) Fire Damage to Attacks
-{variant:3}Adds (12-15) to (30-35) Fire Damage
+{variant:3}Adds (12-15) to (30-35) Fire Damage to Spells and Attacks
 (120-150)% increased Armour
 {variant:3}+(60-80) to maximum Life
 +(35-50)% to Fire Resistance
@@ -54,7 +65,7 @@ Requires Level 70, 159 Str
 +5% Chance to Block
 ]],[[
 Lycosidae
-Splintered Tower Shield
+Rawhide Tower Shield
 Requires Level 11, 33 Str
 +(120-160) to Armour
 +(30-40) to maximum Life
@@ -73,7 +84,7 @@ Requires Level 35, 87 Str
 {variant:1}+1 to Level of Socketed Warcry Gems
 {variant:2}(80-100)% increased Armour
 {variant:2}2% of Attack Damage Leeched as Life against Taunted Enemies
-{variant:2}50% increased Warcry Cooldown Recovery
+{variant:2}50% increased Warcry Cooldown Recovery Speed
 +5% Chance to Block
 {variant:1}20% increased Endurance Charge Duration
 Gain +10 Life when you Taunt an Enemy
@@ -101,7 +112,7 @@ Requires Level 17, 46 Str
 0.5% of Life Regenerated per Second
 15% increased Area of Effect for Skills used by Totems
 {variant:1}1% of Damage Leeched as Life for Skills used by Totems
-{variant:2}0.5% of Damage dealt by Totems is Leeched to you as Life
+{variant:2}0.5% of Damage dealt by your Totems is Leeched to you as Life
 ]],[[
 Tukohama's Fortress
 Ebony Tower Shield
@@ -408,13 +419,17 @@ Gain (5-10)% of Physical Damage as Extra Chaos Damage
 ]],[[
 The Oak
 Plank Kite Shield
+Variant: Pre 2.6.0
+Variant: Current
 Requires Level 40
 +4% to all Elemental Resistances
 (80-120)% increased Armour and Energy Shield
 +(100-150) to maximum Life
 50% reduced Freeze Duration on You
-1% of Life Regenerated per Second
-5% of Life Regenerated per Second while on Low Life
+{variant:1}1% of Life Regenerated per Second
+{variant:2}3% of Life Regenerated per Second
+{variant:1}5% of Life Regenerated per Second while on Low Life
+{variant:2}3% of Life Regenerated per Second while on Low Life
 ]],[[
 Prism Guardian
 Archon Kite Shield
@@ -422,6 +437,7 @@ Variant: Pre 1.1.0
 Variant: Pre 2.0.0
 Variant: Current
 Requires Level 68, 85 Str, 85 Int
+Implicits: 2
 {variant:1}+24% to all Elemental Resistances
 {variant:2,3}+12% to all Elemental Resistances
 {variant:1,2}+1 to Level of Aura Gems in this item
@@ -452,6 +468,7 @@ Branded Kite Shield
 Variant: Pre 1.1.0
 Variant: Current
 Requires Level 59, 76 Str, 76 Int
+Implicits: 2
 {variant:1}+8% to all Elemental Resistances
 {variant:2}+4% to all Elemental Resistances
 {variant:1}(100-120)% of Block Chance applied to Spells
@@ -469,6 +486,7 @@ Variant: Pre 2.0.0
 Variant: Pre 2.6.0
 Variant: Current
 Requires Level 7
+Implicits: 2
 {variant:1}+8% to all Elemental Resistances
 {variant:2,3,4}+4% to all Elemental Resistances
 (80-120)% increased Armour and Energy Shield

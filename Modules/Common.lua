@@ -6,6 +6,7 @@
 
 local pairs = pairs
 local ipairs = ipairs
+local t_insert = table.insert
 local m_abs = math.abs
 local m_floor = math.floor
 local m_min = math.min
@@ -144,16 +145,25 @@ function isMouseInRegion(region)
 end
 
 -- Make a copy of a table and all subtables
-function copyTable(tbl, noRecurse)
-	local out = {}
-	for k, v in pairs(tbl) do
-		if not noRecurse and type(v) == "table" then
-			out[k] = copyTable(v)
-		else
-			out[k] = v
+do
+	local subTableMap = { }
+	function copyTable(tbl, noRecurse, isSubTable)
+		local out = {}
+		if not noRecurse then
+			subTableMap[tbl] = out
 		end
+		for k, v in pairs(tbl) do
+			if not noRecurse and type(v) == "table" then
+				out[k] = subTableMap[v] or copyTable(v, false, true)
+			else
+				out[k] = v
+			end
+		end
+		if not noRecurse and not isSubTable then
+			wipeTable(subTableMap)
+		end
+		return out
 	end
-	return out
 end
 
 -- Wipe all keys from the table and return it, or return a new table if no table provided
@@ -185,6 +195,23 @@ function isValueInArray(tbl, val)
 	end
 end
 
+-- Pretty-prints a table
+function prettyPrintTable(tbl, pre)
+	pre = pre or ""
+	local outNames = { }
+	for name in pairs(tbl) do
+		t_insert(outNames, name)
+	end
+	table.sort(outNames)
+	for _, name in ipairs(outNames) do
+		if type(tbl[name]) == "table" then
+			prettyPrintTable(tbl[name], pre .. name .. ".")
+		else
+			ConPrintf("%s%s = %s", pre, name, tostring(tbl[name]))
+		end
+	end
+end
+
 -- Rounds a number to the nearest <dec> decimal places
 function round(val, dec)
 	if dec then
@@ -194,35 +221,11 @@ function round(val, dec)
 	end
 end
 
--- Formats 1234.56 -> "1,234.5" [dec=1]
-function formatNumSep(val, dec)
-	dec = dec or 0
-	val = val or 0
-	local neg = val < 0
-	val = m_floor(m_abs(val * 10 ^ dec) + 0.5)
-	local str = string.reverse(s_format("%.0f", val))
-	if #str < (dec + 1) then
-		str = str .. string.rep("0", dec + 1 - #str)
-	end
-	local ret = ""
-	local pDec, pThou = dec, 3
-	for ci = 1, #str do
-		local c = str:sub(ci, ci)
-		ret = c .. ret
-		if pDec > 0 then
-			pDec = pDec - 1
-			if pDec == 0 then
-				ret = "." .. ret
-			end
-		else
-			pThou = pThou - 1
-			if pThou == 0 and ci < #str then
-				ret = "," .. ret
-				pThou = 3
-			end
-		end
-	end
-	return (neg and "-" or "") .. ret
+-- Formats "1234.56" -> "1,234.5"
+function formatNumSep(str)
+	return str:gsub("(%d*)(%d%.?)", function(s, e)
+		return s:reverse():gsub("(%d%d)(%d)","%1,%2"):reverse()..e
+	end)
 end
 function getFormatNumSep(dec)
 	return function(val)
@@ -267,3 +270,17 @@ function getFormatSec(dec)
 	end
 end
 
+function copyFile(srcName, dstName)
+	local inFile, msg = io.open(srcName, "r")
+	if not inFile then
+		return nil, "Couldn't open '"..srcName.."': "..msg
+	end
+	local outFile, msg = io.open(dstName, "w")
+	if not outFile then
+		return nil, "Couldn't create '"..dstName.."': "..msg
+	end
+	outFile:write(inFile:read("*a"))
+	inFile:close()
+	outFile:close()
+	return true
+end

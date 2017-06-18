@@ -15,6 +15,16 @@ Adds 40 to 60 Physical Damage to Attacks
 (100-120)% increased Armour
 (40-50)% increased Physical Damage taken
 ]],[[
+The Baron
+Close Helmet
+Requires Level 26, 58 Str
++2 to Level of Socketed Minion Gems
++(20–40) to Strength
+Minions have 20% increased maximum Life
+Your Strength is added to your Minions
++1 to maximum number of Zombies per 300 Strength
+With 1000 or more Strength 2% of Damage dealt by your Zombies is Leeched to you as Life
+]],[[
 Ezomyte Hold
 Iron Hat
 20% increased Physical Damage
@@ -473,7 +483,7 @@ Requires Level 67, 73 Dex, 88 Int
 (130-150)% increased Evasion and Energy Shield
 {variant:1}+2 to Level of Socketed Curse Gems
 {variant:2}+1 to Level of Socketed Curse Gems
-Socketed Curse Gems Supported by Level 22 Blasphemy
+Socketed Curse Gems are Supported by Level 22 Blasphemy
 Socketed Curse Gems have 12% reduced Mana Reservation
 ]],[[
 Leer Cast

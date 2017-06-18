@@ -16,9 +16,9 @@ local m_floor = math.floor
 
 local PassiveTreeViewClass = common.NewClass("PassiveTreeView", function(self)
 	self.ring = NewImageHandle()
-	self.ring:Load("Assets/ring.png")
+	self.ring:Load("Assets/ring.png", "CLAMP")
 	self.highlightRing = NewImageHandle()
-	self.highlightRing:Load("Assets/small_ring.png")
+	self.highlightRing:Load("Assets/small_ring.png", "CLAMP")
 
 	self.zoomLevel = 3
 	self.zoom = 1.2 ^ self.zoomLevel
@@ -26,6 +26,7 @@ local PassiveTreeViewClass = common.NewClass("PassiveTreeView", function(self)
 	self.zoomY = 0
 
 	self.searchStr = ""
+	self.showStatDifferences = true
 end)
 
 function PassiveTreeViewClass:Load(xml, fileName)
@@ -43,6 +44,9 @@ function PassiveTreeViewClass:Load(xml, fileName)
 	if xml.attrib.showHeatMap then
 		self.showHeatMap = xml.attrib.showHeatMap == "true"
 	end
+	if xml.attrib.showStatDifferences then
+		self.showStatDifferences = xml.attrib.showStatDifferences == "true"
+	end
 end
 
 function PassiveTreeViewClass:Save(xml)
@@ -52,6 +56,7 @@ function PassiveTreeViewClass:Save(xml)
 		zoomY = tostring(self.zoomY),
 		searchStr = self.searchStr,
 		showHeatMap = tostring(self.showHeatMap),
+		showStatDifferences = tostring(self.showStatDifferences),
 	}
 end
 
@@ -74,6 +79,8 @@ function PassiveTreeViewClass:Draw(build, viewPort, inputEvents)
 				end
 			elseif event.key == "p" then
 				self.showHeatMap = not self.showHeatMap
+			elseif event.key == "d" and IsKeyDown("CTRL") then
+				self.showStatDifferences = not self.showStatDifferences
 			end
 		elseif event.type == "KeyUp" then
 			if event.key == "LEFTBUTTON" then
@@ -372,11 +379,18 @@ function PassiveTreeViewClass:Draw(build, viewPort, inputEvents)
 		if self.showHeatMap then
 			if not node.alloc and node.type ~= "classStart" and node.type ~= "ascendClassStart" then
 				-- Calculate color based on DPS and defensive powers
-				local dps = m_max(node.power.dps or 0, 0)
-				local def = m_max(node.power.def or 0, 0)
-				local dpsCol = (dps / build.calcsTab.powerMax.dps * 1.5) ^ 0.5
-				local defCol = (def / build.calcsTab.powerMax.def * 1.5) ^ 0.5
-				SetDrawColor(dpsCol, (m_max(dpsCol - 0.5, 0) + m_max(defCol - 0.5, 0)) / 2, defCol)
+				local offence = m_max(node.power.offence or 0, 0)
+				local defence = m_max(node.power.defence or 0, 0)
+				local dpsCol = (offence / build.calcsTab.powerMax.offence * 1.5) ^ 0.5
+				local defCol = (defence / build.calcsTab.powerMax.defence * 1.5) ^ 0.5
+				local mixCol = (m_max(dpsCol - 0.5, 0) + m_max(defCol - 0.5, 0)) / 2
+				if main.nodePowerTheme == "RED/BLUE" then
+					SetDrawColor(dpsCol, mixCol, defCol)
+				elseif main.nodePowerTheme == "RED/GREEN" then
+					SetDrawColor(dpsCol, defCol, mixCol)
+				elseif main.nodePowerTheme == "GREEN/BLUE" then
+					SetDrawColor(mixCol, dpsCol, defCol)
+				end
 			else
 				SetDrawColor(1, 1, 1)
 			end
@@ -408,7 +422,7 @@ function PassiveTreeViewClass:Draw(build, viewPort, inputEvents)
 						SetDrawColor(1, 0, 0)
 					elseif hoverNode.type == "socket" then
 						-- Hover node is a socket, check if this node falls within its radius and color it accordingly
-						for index, data in ipairs(data.jewelRadius) do
+						for index, data in ipairs(build.data.jewelRadius) do
 							if hoverNode.nodesInRadius[index][node.id] then
 								SetDrawColor(data.col)
 								break
@@ -427,7 +441,7 @@ function PassiveTreeViewClass:Draw(build, viewPort, inputEvents)
 			local size = 175 * scale / self.zoom ^ 0.4
 			DrawImage(self.highlightRing, scrX - size, scrY - size, size * 2, size * 2)
 		end
-		if node == hoverNode and (node.type ~= "socket" or not IsKeyDown("SHIFT")) then
+		if node == hoverNode and (node.type ~= "socket" or not IsKeyDown("SHIFT")) and not main.popups[1] then
 			-- Draw tooltip
 			SetDrawLayer(nil, 100)
 			local size = m_floor(hoverNode.size * scale)
@@ -443,7 +457,7 @@ function PassiveTreeViewClass:Draw(build, viewPort, inputEvents)
 		if node == hoverNode then
 			-- Mouse is over this socket, show all radius rings
 			local scrX, scrY = treeToScreen(node.x, node.y)
-			for _, radData in ipairs(data.jewelRadius) do
+			for _, radData in ipairs(build.data.jewelRadius) do
 				local size = radData.rad * scale
 				SetDrawColor(radData.col)
 				DrawImage(self.ring, scrX - size, scrY - size, size * 2, size * 2)
@@ -453,7 +467,7 @@ function PassiveTreeViewClass:Draw(build, viewPort, inputEvents)
 			if jewel and jewel.jewelRadiusIndex then
 				-- Socket is allocated and there's a jewel socketed into it which has a radius, so show it
 				local scrX, scrY = treeToScreen(node.x, node.y)
-				local radData = data.jewelRadius[jewel.jewelRadiusIndex]
+				local radData = build.data.jewelRadius[jewel.jewelRadiusIndex]
 				local size = radData.rad * scale
 				SetDrawColor(radData.col)
 				DrawImage(self.ring, scrX - size, scrY - size, size * 2, size * 2)				
@@ -524,13 +538,13 @@ function PassiveTreeViewClass:AddNodeName(node)
 	main:AddTooltipLine(24, "^7"..node.dn..(launch.devMode and IsKeyDown("ALT") and " ["..node.id.."]" or ""))
 	if node.type == "socket" then
 		if node.attributesInRadius[2]["Str"] >= 40 then
-			main:AddTooltipLine(16, "^7Can support "..data.colorCodes.STRENGTH.."Strength ^7threshold jewels")
+			main:AddTooltipLine(16, "^7Can support "..colorCodes.STRENGTH.."Strength ^7threshold jewels")
 		end
 		if node.attributesInRadius[2]["Dex"] >= 40 then
-			main:AddTooltipLine(16, "^7Can support "..data.colorCodes.DEXTERITY.."Dexterity ^7threshold jewels")
+			main:AddTooltipLine(16, "^7Can support "..colorCodes.DEXTERITY.."Dexterity ^7threshold jewels")
 		end
 		if node.attributesInRadius[2]["Int"] >= 40 then
-			main:AddTooltipLine(16, "^7Can support "..data.colorCodes.INTELLIGENCE.."Intelligence ^7threshold jewels")
+			main:AddTooltipLine(16, "^7Can support "..colorCodes.INTELLIGENCE.."Intelligence ^7threshold jewels")
 		end
 	end
 end
@@ -554,9 +568,9 @@ function PassiveTreeViewClass:AddNodeTooltip(node, build)
 	
 	-- Node name
 	self:AddNodeName(node)
-	if launch.devMode and IsKeyDown("ALT") and node.power and node.power.dps then
+	if launch.devMode and IsKeyDown("ALT") and node.power and node.power.offence then
 		-- Power debugging info
-		main:AddTooltipLine(16, string.format("DPS power: %g   Defence power: %g", node.power.dps, node.power.def))
+		main:AddTooltipLine(16, string.format("DPS power: %g   Defence power: %g", node.power.offence, node.power.defence))
 	end
 
 	-- Node description
@@ -578,7 +592,7 @@ function PassiveTreeViewClass:AddNodeTooltip(node, build)
 					end
 				end
 			end
-			main:AddTooltipLine(16, ((node.mods[i].extra or not node.mods[i].list) and data.colorCodes.UNSUPPORTED or data.colorCodes.MAGIC)..line)
+			main:AddTooltipLine(16, ((node.mods[i].extra or not node.mods[i].list) and colorCodes.UNSUPPORTED or colorCodes.MAGIC)..line)
 		end
 	end
 
@@ -591,8 +605,8 @@ function PassiveTreeViewClass:AddNodeTooltip(node, build)
 	end
 
 	-- Mod differences
-	local calcFunc, calcBase = build.calcsTab:GetMiscCalculator(build)
-	if calcFunc then
+	if self.showStatDifferences then
+		local calcFunc, calcBase = build.calcsTab:GetMiscCalculator(build)
 		main:AddTooltipSeparator(14)
 		local path = (node.alloc and node.depends) or self.tracePath or node.path or { }
 		local pathLength = #path
@@ -621,6 +635,10 @@ function PassiveTreeViewClass:AddNodeTooltip(node, build)
 		if count == 0 then
 			main:AddTooltipLine(14, string.format("^7No changes from %s this node%s.", node.alloc and "unallocating" or "allocating", pathLength > 1 and " or the nodes leading to it" or ""))
 		end
+		main:AddTooltipLine(14, "^x80A080Tip: Press Ctrl+D to disable the display of stat differences.")
+	else
+		main:AddTooltipSeparator(14)
+		main:AddTooltipLine(14, "^x80A080Tip: Press Ctrl+D to enable the display of stat differences.")
 	end
 
 	-- Pathing distance

@@ -63,8 +63,8 @@ Items and Gems have 25% reduced Attribute Requirements
 ]],[[
 The Aylardex
 Agate Amulet
-Variant: Current
 Variant: Pre 2.5.0
+Variant: Current
 Requires Level 32
 +(16-24) to Strength and Intelligence
 +(30-50) to maximum Life
@@ -74,6 +74,13 @@ Requires Level 32
 {variant:2}(80-100)% increased Power Charge Duration
 1% of Damage is taken from Mana before Life per Power Charge
 40% reduced Critical Strike Chance per Power Charge
+]],[[
+Bisco's Collar
+Gold Amulet
+Requires Level 30
+(12-20)% increased Rarity of Items found
+150% increased Rarity of Items Dropped by Slain Magic Enemies
+100% increased Quantity of Items Dropped by Slain Normal Enemies
 ]],[[
 Blightwell
 Clutching Talisman
@@ -309,10 +316,14 @@ Cannot gain Power Charges
 ]],[[
 Rigwald's Curse
 Wereclaw Talisman
+Variant: Pre 2.2.0
+Variant: Current
 League: Talisman Standard
 Requires Level 28
 Talisman Tier: 2
-+(16-24)% to Global Critical Strike Multiplier
+Implicits: 2
+{variant:1}+(16-24)% to Global Critical Strike Multiplier
+{variant:2}+(24-36)% to Global Critical Strike Multiplier
 +7% Base Unarmed Critical Strike Chance
 Modifiers to Claw Damage also apply to Unarmed
 Modifiers to Claw Attack Speed also apply to Unarmed

@@ -221,7 +221,7 @@ Zodiac Leather
 League: Breach
 Requires Level 65, 197 Dex
 (30-50)% increased Evasion Rating
-+(50-70) to maximum Life
++(50-80) to maximum Life
 -30% to Cold Resistance
 (5-10)% increased Dexterity
 100% reduced Arctic Armour Mana Reservation
@@ -474,6 +474,17 @@ You lose all Endurance Charges when Hit
 You gain an Endurance Charge on Kill
 {variant:1}You gain Onslaught for 1 second per Endurance Charge when Hit
 {variant:2}You gain Onslaught for 2 second per Endurance Charge when Hit
+]],[[
+Gruthkul's Pelt
+Wyrmscale Doublet
+Requires Level 38, 57 Str, 57 Dex
+(60-100)% increased Physical Damage
++(130-160) to maximum Life
++(20-40)% to Cold Resistance
+2% of Life Regenerated per second
+15% increased Character Size
+Spell Skills deal no Damage
+Your Spells are disabled
 ]],[[
 Lightning Coil
 Desert Brigandine

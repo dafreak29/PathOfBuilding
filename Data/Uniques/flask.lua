@@ -7,6 +7,7 @@ Blood of the Karui
 Sanctified Life Flask
 Variant: Pre 2.6.0
 Variant: Current
+League: Domination, Nemesis
 Requires Level 50
 (5-20)% increased Recovery Speed
 {variant:1}No Life Recovery Applies during Flask effect
@@ -31,6 +32,7 @@ You gain an Endurance Charge on use
 ]],[[
 Lavianga's Spirit
 Sanctified Mana Flask
+League: Domination, Nemesis
 Requires Level 50
 (30-50)% increased Amount Recovered
 100% increased Recovery Speed
@@ -38,6 +40,7 @@ Your Skills have no Mana Cost during Flask effect
 ]],[[
 Zerphi's Last Breath
 Grand Mana Flask
+League: Perandus
 Requires Level 18
 50% increased Charges used
 Skills used during Flask effect grant 800% of Mana Cost as Life
@@ -215,6 +218,15 @@ You are Shocked during Flask effect
 {variant:2,6}Adds (15-25) to (70-90) Lightning Damage to Spells during Flask effect
 {variant:3,7}Adds (25-35) to (110-130) Lightning Damage to Attacks during Flask effect
 {variant:4,8}20% of Physical Damage Converted to Lightning during Flask effect
+]],[[
+The Wise Oak
+Bismuth Flask
+Requires Level 8
+Implicits: 0
+During Flask Effect, 10% reduced Damage taken of each Element for which your Uncapped
+Elemental Resistance is lowest
+During Flask Effect, Damage Penetrates 20% Resistance of each Element for which your
+Uncapped Elemental Resistance is highest
 ]],[[
 Witchfire Brew
 Stibnite Flask
