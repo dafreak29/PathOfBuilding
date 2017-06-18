@@ -12,6 +12,21 @@ local t_remove = table.remove
 local m_min = math.min
 local m_max = math.max
 
+local groupSlotDropList = {
+	{ label = "None" },
+	{ label = "Weapon 1", slotName = "Weapon 1" },
+	{ label = "Weapon 2", slotName = "Weapon 2" },
+	{ label = "Weapon 1 (Swap)", slotName = "Weapon 1 Swap" },
+	{ label = "Weapon 2 (Swap)", slotName = "Weapon 2 Swap" },
+	{ label = "Helmet", slotName = "Helmet" },
+	{ label = "Body Armour", slotName = "Body Armour" },
+	{ label = "Gloves", slotName = "Gloves" },
+	{ label = "Boots", slotName = "Boots" }, 
+	{ label = "Amulet", slotName = "Amulet" },
+	{ label = "Ring 1", slotName = "Ring 1" },
+	{ label = "Ring 2", slotName = "Ring 2" },
+}
+
 local SkillsTabClass = common.NewClass("SkillsTab", "UndoHandler", "ControlHost", "Control", function(self, build)
 	self.UndoHandler()
 	self.ControlHost()
@@ -23,6 +38,7 @@ local SkillsTabClass = common.NewClass("SkillsTab", "UndoHandler", "ControlHost"
 
 	-- Socket group list
 	self.controls.groupList = common.New("SkillList", {"TOPLEFT",self,"TOPLEFT"}, 20, 24, 360, 300, self)
+	self.controls.groupTip = common.New("LabelControl", {"TOPLEFT",self.controls.groupList,"BOTTOMLEFT"}, 0, 8, 0, 14, "^7Tip: You can copy/paste socket groups using Ctrl+C and Ctrl+V.")
 
 	-- Socket group details
 	self.anchorGroupDetail = common.New("Control", {"TOPLEFT",self.controls.groupList,"TOPRIGHT"}, 20, 0, 0, 0)
@@ -36,25 +52,21 @@ local SkillsTabClass = common.NewClass("SkillsTab", "UndoHandler", "ControlHost"
 		self.build.buildFlag = true
 	end)
 	self.controls.groupSlotLabel = common.New("LabelControl", {"TOPLEFT",self.anchorGroupDetail,"TOPLEFT"}, 0, 30, 0, 16, "^7Socketed in:")
-	self.controls.groupSlot = common.New("DropDownControl", {"TOPLEFT",self.anchorGroupDetail,"TOPLEFT"}, 85, 28, 110, 20, { "None", "Weapon 1", "Weapon 2", "Helmet", "Body Armour", "Gloves", "Boots", "Amulet", "Ring 1", "Ring 2" }, function(sel, selVal)
-		if sel > 1 then
-			self.displayGroup.slot = selVal
-		else
-			self.displayGroup.slot = nil
-		end
+	self.controls.groupSlot = common.New("DropDownControl", {"TOPLEFT",self.anchorGroupDetail,"TOPLEFT"}, 85, 28, 130, 20, groupSlotDropList, function(index, value)
+		self.displayGroup.slot = value.slotName
 		self:AddUndoState()
 		self.build.buildFlag = true
 	end)
-	self.controls.groupSlot.tooltipFunc = function(mode, sel, selVal)
-		if mode == "OUT" or sel == 1 then
+	self.controls.groupSlot.tooltipFunc = function(mode, index, value)
+		if mode == "OUT" or index == 1 then
 			main:AddTooltipLine(16, "Select the item in which this skill is socketed.")
 			main:AddTooltipLine(16, "This will allow the skill to benefit from modifiers on the item that affect socketed gems.")
 		else
-			local slot = self.build.itemsTab.slots[selVal]
+			local slot = self.build.itemsTab.slots[value.slotName]
 			local ttItem = self.build.itemsTab.list[slot.selItemId]
 			if ttItem then
 				self.build.itemsTab:AddItemTooltip(ttItem, slot)
-				return data.colorCodes[ttItem.rarity], true
+				return colorCodes[ttItem.rarity], true
 			else
 				main:AddTooltipLine(16, "No item is equipped in this slot.")
 			end
@@ -74,9 +86,9 @@ local SkillsTabClass = common.NewClass("SkillsTab", "UndoHandler", "ControlHost"
 	end
 	self.controls.sourceNote.label = function()
 		local item = self.displayGroup.sourceItem or { rarity = "NORMAL", name = "?" }
-		local itemName = data.colorCodes[item.rarity]..item.name.."^7"
+		local itemName = colorCodes[item.rarity]..item.name.."^7"
 		local activeGem = self.displayGroup.gemList[1]
-		local label = [[^7This is a special group created for the ']]..activeGem.color..activeGem.nameSpec..[[^7' skill,
+		local label = [[^7This is a special group created for the ']]..activeGem.color..(activeGem.grantedEffect and activeGem.grantedEffect.name or activeGem.nameSpec)..[[^7' skill,
 which is being provided by ']]..itemName..[['.
 You cannot delete this group, but it will disappear if you un-equip the item.]]
 		if not self.displayGroup.noSupports then
@@ -105,14 +117,26 @@ function SkillsTabClass:Load(xml, fileName)
 			socketGroup.slot = node.attrib.slot
 			socketGroup.source = node.attrib.source
 			socketGroup.mainActiveSkill = tonumber(node.attrib.mainActiveSkill) or 1
+			socketGroup.mainActiveSkillCalcs = tonumber(node.attrib.mainActiveSkillCalcs) or 1
 			socketGroup.gemList = { }
 			for _, child in ipairs(node) do
 				local gem = { }
-				gem.nameSpec = child.attrib.nameSpec
+				gem.nameSpec = child.attrib.nameSpec or ""
+				if child.attrib.skillId then
+					local skill = self.build.data.skills[child.attrib.skillId]
+					if skill and self.build.data.gems[skill.name] then
+						gem.nameSpec = skill.name
+					end
+				end
 				gem.level = tonumber(child.attrib.level)
 				gem.quality = tonumber(child.attrib.quality)
 				gem.enabled = not child.attrib.enabled and true or child.attrib.enabled == "true"
 				gem.skillPart = tonumber(child.attrib.skillPart)
+				gem.skillPartCalcs = tonumber(child.attrib.skillPartCalcs)
+				gem.skillMinion = child.attrib.skillMinion
+				gem.skillMinionCalcs = child.attrib.skillMinionCalcs
+				gem.skillMinionSkill = tonumber(child.attrib.skillMinionSkill)
+				gem.skillMinionSkillCalcs = tonumber(child.attrib.skillMinionSkillCalcs)
 				t_insert(socketGroup.gemList, gem)
 			end
 			if node.attrib.skillPart and socketGroup.gemList[1] then
@@ -134,14 +158,21 @@ function SkillsTabClass:Save(xml)
 			slot = socketGroup.slot,
 			source = socketGroup.source,
 			mainActiveSkill = tostring(socketGroup.mainActiveSkill),
+			mainActiveSkillCalcs = tostring(socketGroup.mainActiveSkillCalcs),
 		} }
 		for _, gem in ipairs(socketGroup.gemList) do
 			t_insert(node, { elem = "Gem", attrib = {
 				nameSpec = gem.nameSpec,
+				skillId = gem.skillId,
 				level = tostring(gem.level),
 				quality = tostring(gem.quality),
 				enabled = tostring(gem.enabled),
 				skillPart = gem.skillPart and tostring(gem.skillPart),
+				skillPartCalcs = gem.skillPartCalcs and tostring(gem.skillPartCalcs),
+				skillMinion = gem.skillMinion,
+				skillMinionCalcs = gem.skillMinionCalcs,
+				skillMinionSkill = gem.skillMinionSkill and tostring(gem.skillMinionSkill),
+				skillMinionSkillCalcs = gem.skillMinionSkillCalcs and tostring(gem.skillMinionSkillCalcs),
 			} })
 		end
 		t_insert(xml, node)
@@ -208,8 +239,8 @@ function SkillsTabClass:PasteSocketGroup()
 		end
 		if #newGroup.gemList > 0 then
 			t_insert(self.socketGroupList, newGroup)
-			self.controls.groupList.selGroup = newGroup
 			self.controls.groupList.selIndex = #self.socketGroupList
+			self.controls.groupList.selValue = newGroup
 			self:SetDisplayGroup(newGroup)
 			self:AddUndoState()
 			self.build.buildFlag = true
@@ -224,6 +255,9 @@ function SkillsTabClass:CreateGemSlot(index)
 
 	-- Gem name specification
 	slot.nameSpec = common.New("GemSelectControl", nil, 0, 0, 300, 20, self, index, function(buf, addUndo)
+		if not self.displayGroup then
+			return
+		end
 		if not self.displayGroup.gemList[index] then
 			self.displayGroup.gemList[index] = { nameSpec = "", level = 20, quality = 0, enabled = true }
 			slot.level:SetText("20")
@@ -231,20 +265,9 @@ function SkillsTabClass:CreateGemSlot(index)
 			slot.enabled.state = true
 		end
 		local gem = self.displayGroup.gemList[index]
-		local prevDefaultLevel
-		if gem.data then
-			prevDefaultLevel = (gem.data.levels[20] and 20) or (gem.data.levels[3][1] and 3) or 1
-		end
 		gem.nameSpec = buf
 		self:ProcessSocketGroup(self.displayGroup)
-		if gem.data then
-			local defaultLevel = (gem.data.levels[20] and 20) or (gem.data.levels[3][1] and 3) or 1
-			gem.defaultLevel = defaultLevel
-			if prevDefaultLevel ~= defaultLevel then
-				gem.level = defaultLevel
-				slot.level:SetText(tostring(gem.level))
-			end
-		end
+		slot.level:SetText(tostring(gem.level))
 		if addUndo then
 			self:AddUndoState()
 		end
@@ -354,23 +377,18 @@ function SkillsTabClass:FindSkillGem(nameSpec)
 		"^"..nameSpec:gsub(" ",""):gsub("%a", ".*%0"), -- Global abbreviation ("CtoF" -> "Cold to Fire")
 		"^"..nameSpec:gsub(" ",""):gsub("%a", function(a) return ".*".."["..a:upper()..a:lower().."]" end), -- Case insensitive global abbreviation ("ctof" -> "Cold to Fire")
 	}
-	local gemName, gemData
 	for i, pattern in ipairs(patternList) do
-		for name, data in pairs(data.gems) do
-			if (" "..name):match(pattern) then
-				if gemName then
-					return "Ambiguous gem name '"..nameSpec.."': matches '"..gemName.."', '"..name.."'"
+		local gemData
+		for gemName, grantedEffect in pairs(self.build.data.gems) do
+			if (" "..gemName):match(pattern) then
+				if gemData then
+					return "Ambiguous gem name '"..nameSpec.."': matches '"..gemData.name.."', '"..gemName.."'"
 				end
-				gemName = name
-				gemData = data
+				gemData = grantedEffect
 			end
 		end
-		if gemName then
-			if gemData.unsupported then
-				return gemName.." is unsupported"
-			else
-				return nil, gemName, gemData
-			end
+		if gemData then
+			return nil, gemData
 		end
 	end
 	return "Unrecognised gem name '"..nameSpec.."'"
@@ -386,35 +404,51 @@ function SkillsTabClass:ProcessSocketGroup(socketGroup)
 			break
 		end
 		gem.color = "^8"
+		gem.nameSpec = gem.nameSpec or ""
+		local prevDefaultLevel = gem.grantedEffect and gem.grantedEffect.defaultLevel
 		if gem.nameSpec:match("%S") then
-			-- Gem name has been specified, try to find the matching skill gem
-			if data.gems[gem.nameSpec] then
-				if data.gems[gem.nameSpec].unsupported then
-					gem.errMsg = gem.nameSpec.." is not supported yet"
-					gem.name = nil
-					gem.data = nil
-				else
-					gem.errMsg = nil
-					gem.name = gem.nameSpec
-					gem.data = data.gems[gem.nameSpec]
-				end
+			-- Gem name has been specified, try to find the matching skill
+			if self.build.data.gems[gem.nameSpec] then
+				gem.errMsg = nil
+				gem.grantedEffect = self.build.data.gems[gem.nameSpec]
+			elseif self.build.data.skills[gem.nameSpec] then
+				gem.errMsg = nil
+				gem.grantedEffect = self.build.data.skills[gem.nameSpec]
 			else
-				gem.errMsg, gem.name, gem.data = self:FindSkillGem(gem.nameSpec)
+				gem.errMsg, gem.grantedEffect = self:FindSkillGem(gem.nameSpec)
+				if gem.grantedEffect then
+					gem.nameSpec = gem.grantedEffect.name
+				end
 			end
-			if gem.name then
-				gem.nameSpec = gem.name
-				if gem.data.strength then
-					gem.color = data.colorCodes.STRENGTH
-				elseif gem.data.dexterity then
-					gem.color = data.colorCodes.DEXTERITY
-				elseif gem.data.intelligence then
-					gem.color = data.colorCodes.INTELLIGENCE
+			gem.skillId = gem.grantedEffect and gem.grantedEffect.id
+			if gem.grantedEffect and gem.grantedEffect.unsupported then
+				gem.errMsg = gem.nameSpec.." is not supported yet"
+				gem.grantedEffect = nil
+			end
+			if gem.grantedEffect then
+				if gem.grantedEffect.color == 1 then
+					gem.color = colorCodes.STRENGTH
+				elseif gem.grantedEffect.color == 2 then
+					gem.color = colorCodes.DEXTERITY
+				elseif gem.grantedEffect.color == 3 then
+					gem.color = colorCodes.INTELLIGENCE
 				else
-					gem.color = data.colorCodes.NORMAL
+					gem.color = colorCodes.NORMAL
+				end
+				if prevDefaultLevel and gem.grantedEffect.defaultLevel ~= prevDefaultLevel then
+					gem.level = gem.grantedEffect.defaultLevel
+					gem.defaultLevel = gem.grantedEffect.defaultLevel
+				end
+				calcLib.validateGemLevel(gem)
+				if gem.grantedEffect.gemTags then
+					gem.reqLevel = gem.grantedEffect.levels[gem.level][1]
+					gem.reqStr = calcLib.gemStatRequirement(gem.reqLevel, gem.grantedEffect.support, gem.grantedEffect.gemStr)
+					gem.reqDex = calcLib.gemStatRequirement(gem.reqLevel, gem.grantedEffect.support, gem.grantedEffect.gemDex)
+					gem.reqInt = calcLib.gemStatRequirement(gem.reqLevel, gem.grantedEffect.support, gem.grantedEffect.gemInt)
 				end
 			end
 		else
-			gem.errMsg, gem.name, gem.data = nil
+			gem.errMsg, gem.grantedEffect = nil
 		end
 		if gem.nameSpec:match("%S") or gem.level ~= (gem.defaultLevel or 20) or gem.quality ~= 0 or (socketGroup == self.displayGroup and self.gemSlots[index] and self.gemSlots[index].nameSpec.dropped) then
 			index = index + 1
@@ -447,7 +481,7 @@ function SkillsTabClass:SetDisplayGroup(socketGroup)
 
 		-- Update the main controls
 		self.controls.groupLabel:SetText(socketGroup.label)
-		self.controls.groupSlot:SelByValue(socketGroup.slot or "None")
+		self.controls.groupSlot:SelByValue(socketGroup.slot, "slotName")
 		self.controls.groupEnabled.state = socketGroup.enabled
 
 		-- Update the gem slot controls
@@ -465,25 +499,10 @@ function SkillsTabClass:CreateUndoState()
 	local state = { }
 	state.socketGroupList = { }
 	for _, socketGroup in ipairs(self.socketGroupList) do
-		local newGroup = { 
-			label = socketGroup.label,
-			slot = socketGroup.slot,
-			enabled = socketGroup.enabled,
-			source = socketGroup.source,
-			mainActiveSkill = socketGroup.mainActiveSkill,
-			gemList = { }
-		}
+		local newGroup = copyTable(socketGroup, true)
+		newGroup.gemList = { }
 		for index, gem in pairs(socketGroup.gemList) do
-			newGroup.gemList[index] = {
-				nameSpec = gem.nameSpec,
-				level = gem.level,
-				quality = gem.quality,
-				enabled = gem.enabled,
-				skillPart = gem.skillPart,
-				name = gem.name,
-				data = gem.data,
-				errMsg = gem.errMsg,
-			}
+			newGroup.gemList[index] = copyTable(gem, true)
 		end
 		t_insert(state.socketGroupList, newGroup)
 	end
@@ -492,9 +511,12 @@ end
 
 function SkillsTabClass:RestoreUndoState(state)
 	local displayId = isValueInArray(self.socketGroupList, self.displayGroup)
-	self.socketGroupList = state.socketGroupList
+	wipeTable(self.socketGroupList)
+	for k, v in pairs(state.socketGroupList) do
+		self.socketGroupList[k] = v
+	end
 	self:SetDisplayGroup(displayId and self.socketGroupList[displayId])
-	if self.controls.groupList.selGroup then
-		self.controls.groupList.selGroup = self.socketGroupList[self.controls.groupList.selIndex]
+	if self.controls.groupList.selValue then
+		self.controls.groupList.selValue = self.socketGroupList[self.controls.groupList.selIndex]
 	end
 end

@@ -128,6 +128,16 @@ Requires Level 34, 62 Dex
 +(40-50)% to Fire Resistance
 10% increased Movement Speed
 ]],[[
+Garukhan's Flight
+Stealth Boots
+Requires Level 62, 117 Dex
++(30-40) to Dexterity
+(80-120)% increased Evasion Rating
+30% increased Movement Speed
+Immune to Burning Ground, Shocked Ground and Chilled Ground
+Regenerate 100 Life per second while moving
++1 to Maximum Life per 10 Dexterity
+]],[[
 Seven-League Step
 Rawhide Boots
 League: Perandus
@@ -276,7 +286,7 @@ Requires Level 65, 62 Str, 62 Dex
 {variant:2}(40-70)% increased Armour and Evasion
 +(20-40)% to Lightning Resistance
 5% increased Movement Speed per Frenzy Charge
-+1 maximum Frenzy Charge
++1 to Maximum Frenzy Charge
 {variant:1}50% reduced Frenzy Charge Duration
 {variant:2}40% reduced Frenzy Charge Duration
 25% reduced Light Radius
@@ -294,7 +304,7 @@ Requires Level 18
 15% increased Movement Speed
 50% increased Stun Recovery
 20% reduced Light Radius
-{variant:2}Adds (15-20) to (25-30) Chaos Damage while using a Flask
+{variant:2}Adds (15-20) to (25-30) Chaos Damage to Spells and Attacks while using a Flask
 +50% to Chaos Resistance while using a Flask
 ]],[[
 Dusktoe
@@ -410,7 +420,7 @@ Requires Level 16, 18 Dex, 18 Int
 +(30-50) to Evasion Rating
 +(15-30) to maximum Energy Shield
 20% increased Movement Speed
-20% to Cold Resistance
++20% to Cold Resistance
 {variant:1}30% increased Physical Damage taken
 {variant:2}20% increased Physical Damage taken
 {variant:3}15% increased Damage taken while on Full Energy Shield

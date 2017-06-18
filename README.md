@@ -6,10 +6,10 @@ Welcome to Path of Building, an offline build planner for Path of Exile!
   * Calculate your skill DPS, damage over time, life/mana/ES totals and much more!
   * Can factor in auras, buffs, charges, curses, monster resistances and more, to estimate your effective DPS
   * Also calculates life/mana reservations
-  * Shows a summary of character stats in the side bar, as well as a detailed calcs breakdown tab which can show you how the stats were derived
+  * Shows a summary of character stats in the side bar, as well as a detailed calculations breakdown tab which can show you how the stats were derived
   * Supports most skills, support gems, passives and item modifiers
     * Throughout the program, supported modifiers will show in blue and unsupported ones in red
-    * Most minion skill are unsupported at present (except for golems, which can provide buffs to you)
+  * Full support for minions
 * Passive skill tree planner:
   * Support for jewels including most radius/conversion jewels
   * Features alternate path tracing (mouse over a sequence of nodes while holding shift, then click to allocate them all)
@@ -27,6 +27,9 @@ Welcome to Path of Building, an offline build planner for Path of Exile!
   * Contains a searchable database of all uniques that are currently in game (and some that aren't yet!)
     * You can choose the modifier rolls when you add a unique to your build
     * Includes all league-specific items and legacy variants
+  * Features a basic item crafting system:
+    * You can select from any of the game's base item types
+	* For Flasks and Jewels you can select modifiers from lists; for other item types modifiers must be added manually at present
   * Also contains a database of rare item templates:
     * Allows you to create rare items for your build to approximate the gear you will be using
     * Choose which modifiers appear on each item, and the rolls for each modifier, to suit your needs
@@ -41,12 +44,392 @@ Welcome to Path of Building, an offline build planner for Path of Exile!
 ## Download
 Head over to the [Releases](https://github.com/Openarl/PathOfBuilding/releases) page to download the installer.
 
+## Donate
+If you'd like to help support the development of Path of Building, I have a [Patreon page](https://www.patreon.com/openarl).
+
 ## Screenshots
 ![ss1](https://cloud.githubusercontent.com/assets/19189971/18089779/f0fe23fa-6f04-11e6-8ed7-ff7d5b9f867a.png)
 ![ss2](https://cloud.githubusercontent.com/assets/19189971/18089778/f0f923f0-6f04-11e6-89c2-b2c1410d3583.png)
 ![ss3](https://cloud.githubusercontent.com/assets/19189971/18089780/f0ff234a-6f04-11e6-8c88-6193fe59a5c4.png)
 
 ## Changelog
+### 1.4.33 - 2017/06/18
+For 3.0 builds:
+ * Updated the wording of various passives
+   * Many conditional modifiers on passives will now apply to Ailments
+ * Frostbolt and Ice Nova now have a "Cast on Frostbolt?" option in the Configuration tab to enable the 40% more Damage
+ * Updated poison and bleed damage ratios to 20% and 70% respectively
+ * The Bleed, Poison and Ignite sections of the Calcs tab now include breakdowns of the source damage for those ailments
+ * The breakdowns for Bleed, Poison and Ignite DPS have had some minor improvements in wording
+ * Damage Multiplier for Ailments from Critical Strikes is now displayed in the Crits section of the Calcs tab
+    * It should also now be calculated correctly
+ * All sources of added base damage should now apply to Ailments if they can also apply to the hit
+Also, for ZiggyD: "Double Dipping"
+
+### 1.4.32 - 2017/06/17
+ * Fixed error caused by Punishment
+For 3.0 builds:
+ * The "# of Poison on Enemy" option in the Configuration tab now works for Vile Toxins
+
+### 1.4.31 - 2017/06/16
+ * The Buff/Debuff Skill lists in the Calcs tab now have breakdowns that list all the modifiers granted by those skills
+ * Added an option to the Configuration tab for "Are you always on full Energy Shield?"
+ * Fixed issue causing gems with a low maximum level to sometimes be assigned the wrong default level
+ * Fixed issue causing the slot dropdown in the Skills tab to fail to update correctly under some conditions
+For 3.0 builds:
+ * The new support gems have been updated with the new data from the beta patch
+ * Applied the following changes from the beta patch:
+    * Blade Vortex's per-blade damage multiplier now applies to Ailments
+    * Flameblast's per-stage damage multiplier no longer applies to Decay
+	* Incinerate's per-stage damage multiplier no longer applies to Decay
+	* Blade Flurry's per-stage damage multiplier no longer applies to Decay
+ * Minion's Decay DPS is now shown in the sidebar
+ * Immolate and Hypothermia's conditional modifiers now apply to Ailments
+ * Unbound Ailments's modifier to Effect of Ailments should now function correctly
+ * Fixed issue causing the "increased Physical Damage taken" stat from Maim Support to sometimes apply multiple times
+
+### 1.4.30 - 2017/06/16
+ * Mind over Matter is now displayed in the Damage Taken section of the Calcs tab, instead of Other Defences
+For 3.0 builds:
+ * Mind over Matter is now factored into the Net Regen calculation; Net Life Regen and Net Mana Regen are calculated
+   and displayed separately
+ 
+### 1.4.29 - 2017/06/15
+ * Fixed an error that occasionally appeared when editing gems in the Skills tab
+For 3.0 builds:
+ * Damage multipliers for skill parts (e.g Flameblast stages) should now correctly apply to Decay
+
+### 1.4.28 - 2017/06/14
+For 3.0 builds:
+ * Deadly Ailments' Ailment Damage modifier should now correctly apply to Ignite
+ * Fixed error caused by setting quality on Unbound Ailments
+
+### 1.4.27 - 2017/06/14
+ * Added support for the additional totem modifier on Skirmish
+For 3.0 builds:
+ * Added preliminary support for the 11 new support gems
+    * Note that these gems are still using pre-release data, so some stats may change once the beta patch is available
+
+### 1.4.26 - 2017/06/12
+ * Added Bramble Cobra to the spectre library
+ * Added support for the Chaos degen from Forbidden Taste
+For 3.0 builds:
+ * Damage multipliers for skill parts (e.g Flameblast stages) should now correctly apply to Damaging Ailments
+ * Added damage from buffs (e.g Heralds, Anger) should now correctly apply to Damaging Ailments
+ * Fixed the multiplier on Remote Mine
+
+### 1.4.25 - 2017/06/11
+ * Added options to the Options dialog to show thousands separators in the sidebar or Calcs tab
+ * Fixed error that could result from importing a character into a 3.0 build
+ * A warning is now shown before importing a character into a 3.0 build
+ 
+### 1.4.24 - 2017/06/09
+ * Converting builds between game versions will now automatically update the names of gems that been renamed
+For 3.0 builds:
+ * Updated the base damage for Zombies, Raging Spirits and Skeleton Warriors
+ * The duration penalty from Rapid Decay should now apply correctly
+
+### 1.4.23 - 2017/06/09
+ * Fixed issue causing some of the item type filters in the unique and rare databases to disable the other filters
+For 3.0 builds:
+ * Modifiers to Area Damage should now apply to all instances of Area Damage over Time (Righteous Fire, Vortex, etc)
+ * Modifiers to Skill Effect Duration will now apply to Puncture's Bleed and Viper Strike's Poison
+ * The Decay calculation has been updated to account for the Damage over Time changes
+ * Elemental Damage with Attacks now correctly affects Ignite
+ 
+### 1.4.22 - 2017/06/09
+ * Fixed bug causing certain skill stats to be ignored; this notably affected Blade Vortex and Wither
+For 3.0 builds:
+ * Applied the Damage over Time changes
+    * The new DoT code hasn't been tested as thoroughly as it needs to be, so it may have mistakes
+ * Updated the bandit rewards
+ * Reverted some unintended changes to minion's skills made in 1.4.21
+
+### 1.4.21 - 2017/06/08
+For 3.0 builds:
+ * Updated skills (except for skills used by minions and spectres)
+ * Updated item bases
+ * Updated item modifiers (affixes, corrupted, master)
+ * Vaal Pact should now work correctly
+
+### 1.4.20 - 2017/06/08
+ * You can now create builds for the 3.0 beta:
+    * You can choose the game version when creating a Build
+	* You can convert a build between versions using the new "Game Version" option in the Configuration tab
+	* All existing builds default to 2.6
+For 3.0 builds:
+ * The passive tree has been updated
+ * Other changes (such as the Damage over Time overhaul) are still to come
+
+### 1.4.19 - 2017/06/07
+ * The build list now has support for folders
+ * Importing from a build code no longer requires you to name the build before importing
+ * Fixed an error that could appear while using the item text editor
+
+### 1.4.18 - 2017/06/03
+ * The "Craft item..." feature has been significantly enhanced:
+    * Modifiers are now available for all item types, not just Flasks and Jewels
+	* The affix lists now obey all restrictions that prevent certain modifiers from appearing together
+	   * For example, selecting "inc. Attack Speed with Bows" on a jewel will exclude "inc. Physical Damage with Axes"
+ * You can now add custom modifiers to Magic and Rare items using the new "Add modifier.." button
+    * For applicable item types you can choose from Master and Essence modifiers, in addition to writing your own modifier
+	* All master mods have been removed from the rare templates, since they can easily be added using the new option
+ * Additional type filters have been added to the Unique and Rare databases
+ * Added a "# of Poison on Enemy" option to the Configuration tab for Growing Agony
+ * The Poison section in the Calcs tab now displays Max Poison Stacks
+ * Added Merveil's Blessed to the spectre library
+ * Orb of Storms no longer incorrectly benefits from modifiers to area damage
+ * Various minor tweaks and fixes
+ 
+### 1.4.17 - 2017/05/29
+ * Added base radius for Zombie's slam
+ * Minions (including Spectres) will now show the correct attack range for their melee skills
+ * Fixed an error that would appear when equipping Blood of Corruption
+ * Corrected the radius for Infernal Blow
+
+### 1.4.16 - 2017/05/27
+ * Items can now be corrupted via the new "Corrupt..." button that appears when viewing the item
+ * Explosive Arrow's additional radius per fuse is now factored into the area calculation
+ * Fixed an error that would sometimes appear when editing gems in the Skills tab
+
+### 1.4.15 - 2017/05/26
+This update adds support for level and attribute requirements:
+ * Item tooltips now show level and attribute requirements
+    * Level requirements shown for items imported from in-game may be lower than in-game; this cannot be avoided
+	* Some previously-imported items may display a more accurate level requirement if they are re-imported
+ * The gem selectors in the Skills tab now have tooltips that show level and attribute requirements, plus some other details
+ * The sidebar now shows your attribute requirements if they aren't met
+ * The Attributes section of the Calcs tab now shows attribute requirements, with detailed breakdowns
+Other changes:
+ * Witchfire Brew's Vulnerability aura now interacts correctly with Umbilicus Immortalis
+
+### 1.4.14 - 2017/05/24
+ * Added an option to the Configuration tab for "Have you been Crit Recently?"
+ * Fixed some issues with item templates and the All items/Shared items lists
+
+### 1.4.13 - 2017/05/20
+ * Detonate Dead now has an input in the Configuration tab for "Corpse Life"
+ * Added support for Hungry Abyss
+
+### 1.4.12 - 2017/05/19
+ * The Items tab now has a "Shared items" list which is shared between all of your builds
+ * Added an Options screen, accessed via a new button at the bottom left corner. The following options have been added:
+    * Proxy server: specifies the proxy that the program should use when updating or importing characters
+	* Build save path: overrides the default save location for builds
+	* Node Power colours: changes the colour scheme used for the node power display
+ * The breakdowns for hit damage types now show the percentage of total hit damage that is being dealt as that type
+ * The stat differences shown in passive skill tooltips can now be toggled on and off by pressing Ctrl+D
+ * Some friendly toasts have set up camp in the bottom left corner, and may appear occasionally to convey various messages
+ * With the new installer versions, the program will always update itself when started for the first time, but will still
+   start even if the update check fails
+
+### 1.4.11 - 2017/05/16
+ * Fixed a stack overflow error that could occur when trying to view breakdowns in the Calcs tab
+ * Fixed interaction between weapon swap and skills granted by items
+ * Consolidated the program's various list controls; their appearence and behaviour should be largely unchanged,
+   aside from some minor enhancements
+ * Various minor tweaks and fixes
+
+### 1.4.10 - 2017/05/12
+ * Added support for weapon swap:
+    * You can switch between the two weapon sets using the new buttons above the Weapon 1 slot on the Items tab
+	* Skills in the inactive weapon set are automatically disabled
+	* Switching weapon sets will automatically update the main skill selection if the current main skill is socketed in the
+	  set being deactivated and there is a skill socketed in the set being activated
+	* Importing character items will now import both weapon sets
+ * Added support for "X% chance to deal Double Damage" modifiers
+ * The comparison tooltip for passive trees now displays the number of refund points needed to switch to that tree
+ * Added an option to the Configuration tab for "# of Freeze/Shock/Ignite on Enemy" (for The Taming)
+ * Fixed several anomalies in the handling of duplicate support gems
+Also, for those interested in supporting the development of the program I now have a Patreon page.
+You can find the link in the About window.
+
+### 1.4.9 - 2017/05/08
+ * AoE Radius and Weapon Range are now calculated and displayed in the "Skill type-specific Stats" section of the Calcs tab
+    * The breakdowns for those calculations feature a visual display of the area size
+	* The base radius values of some skills are not known, so they will not be shown
+ * Explosive Arrow now has separate skill parts for 1 fuse and 5 fuses
+ * Added support for Convocation
+ * Rallying Cry's buff is now able to affect minions
+ * The character limit for build names has been increased to 100; the build list has also been widened
+ * Spells of the correct type will now be considered to be Triggered when socketed into Mjolner and Cospri's Malice
+ * Infernal Blow no longer incorrectly benefits from modifiers to area damage
+
+### 1.4.8 - 2017/05/02
+ * Added a Physical Damage Reduction estimate for Armour; by default the estimate is made using the same damage value
+   used in-game on the character sheet, but it can be overriden using a new option in the Configuration tab
+ * Added a new "Damage Taken" section to the Calcs tab that shows the incoming damage multipliers for each damage type
+    * These factor in mitigation (resistances/armour) and modifiers to damage taken
+	* The multipliers for hits and DoTs are calculated and shown separately
+	* The multiplier for Physical hit damage includes the Physical Damage Reduction estimate mentioned above
+ * Added self-degen calculations for Righteous Fire and Blood Rage:
+    * The sidebar will display "Total Degen" and "Net Regen" (Total Regen minus Total Degen)
+    * Detailed breakdowns for these calculations can be found in the new Damage Taken section of the Calcs tab
+ * Added combined avoidance chances for Melee/Projectile/Spell to the Other Defences section of the Calcs tab which
+   factor in evasion, block, and dodge
+ * Added support for Arrow Dancing
+ * The "increase maximum Life if no worn Items are Corrupted" stat on Voll's Vision should now apply correctly
+ * Corrected the range of the life modifier on The Perfect Form
+ * Corrected The Alyardex's variants
+ * Fixed issue that prevented the program's title bar from appearing at low screen resolutions
+ 
+### 1.4.7 - 2017/04/20
+ * A new section has been added to the Configuration tab for Map Modifiers and Player Debuffs
+    * This section contains options for simulating many map modifiers, as well as self-curses
+ * Added support for Self-Flagellation
+ * Corrected the range of the increased Physical Damage modifier on Edge of Madness
+
+### 1.4.6 - 2017/04/20
+ * Fixed bug introduced in 1.4.5 that prevented Onslaught and Unholy Might from applying correctly
+ * The minion modifiers on the jewel templates are now correctly hidden when their value is set to 0
+
+### 1.4.5 - 2017/04/19
+ * Added support for Goatman Fire-raiser's Magma Orb skill
+ * Demigod items and legacy (pre-1.2.0) quiver types can now be imported
+ * Fixed issue causing the enchanting UI to only show enchantments for the first skill in each socket group
+ * Fixed issue preventing the life/mana leech boot enchantment from working
+
+### 1.4.4 - 2017/04/17
+This update fixes two issues affecting the damage calculations for minions.
+As a result, the calculated DPS for many minion skills will change to some degree:
+ * All golem skills will gain up to 25% DPS
+ * Other minion's attacks will generally lose up to 30% DPS, but some may gain DPS
+ * Other minion's spells are generally unaffected, but some will gain up to 10% DPS
+ * Zombies, Skeleton Warriors and Raging Spirits are not affected
+Other changes:
+ * Improved the DPS calculation for Blade Vortex skills used by spectres:
+	* The blade count can be set using a new option for Raise Spectre in the Configuration tab
+    * The skills now have a hit rate override, which allows the DPS to be calculated properly
+ * Added support for the Raise Spiders skill granted by Arakaali's Fang
+ * Added support for the Spectral Spirits skill granted by Essence of Insanity
+ * Added the attack rate cap for Blink/Mirror Arrow clones
+
+### 1.4.3 - 2017/04/16
+ * Added Fighting Bull, Kraityn's Sniper, Shadow Lurker and Kaom's Chosen to the spectre library
+ * Added options to the Configuration tab to enable charges for all minions
+ * Corrected the minion damage modifier on the Cobalt Jewel template, and added the minion life modifier
+ * Fixed issue causing minions to trigger Elemental Equilibrium
+ 
+### 1.4.2 - 2017/04/16
+ * Added support for Beacon of Corruption's Caustic Cloud (adds an extra 'Caustic Cloud' skill to your minions)
+ * Added Goatman Fire-raiser, Towering Figment, Noisome Ophidian and Pocked Lanternbearer/Illuminator to the spectre library
+ * Fixed the flat mana modifier on Grand Spectrum
+
+### 1.4.1 - 2017/04/16
+ * Added Slashed Miscreation, Spectral Scoundrel and Cannibal Fire-eater to the spectre library
+    * The DPS for monster versions of Blade Vortex won't be accurate yet
+ * Added support for the modifier on The Anima Stone that grants an additional golem with 3 Primordial jewels
+ * The Zombie's Slam skill should now count as a melee skill
+ * Minion and Totem Elemental Resistances Support now correctly applies resistances to minions
+ * Fixed the minion damage conversion from The Scourge
+ * Fixed the golem damage modifier on Primordial Harmony
+ * Fixed the Zombie Slam modifiers on Violent Dead
+
+### 1.4.0 - 2017/04/15
+This update adds support for Minions:
+ * Added support for the following skills:
+    * Blink Arrow
+	* Mirror Arrow
+	* Raise Spectre:
+	   * A library of commonly used spectres has been added; with Raise Spectre selected as the main skill,
+	     you can click "Manage Spectres..." to browse it and add spectres to your build
+	   * The level of the spectre can be set via a new option in the Configuration tab
+	   * Spectre curses are disabled by default, and can be enabled in the Configuration tab
+	* Raise Zombie
+	* Summon Raging Spirit
+	* Summon Skeletons
+	* Vaal Summon Skeletons (except generals)
+	* Summon Spectal Wolf (from The Scourge)
+ * Added minion support for:
+	* Summon Chaos Golem
+	* Summon Flame Golem
+	* Summon Ice Golem
+	* Summon Lightning Golem (the Wrath aura can be enabled via a new option in the Configuration tab)
+	* Summon Stone Golem
+ * Added support for:
+    * Minion Instability (adds an extra 'Minion Instability' skill to your minions)
+	* Necromantic Aegis
+    * Most minion-related helmet enchantments
+Other changes:
+ * A new section has been added to the Configuration tab for skill-specific options
+    * The section will only appear if at least one of your skills have options
+    * The only options added so far are those mentioned above, but more will be added later
+ * Skill cooldowns are now calculated and displayed
+ * Corrected or updated the wording of modifiers on several uniques
+ * Fixed several "NaN" values that could appear for mana-related stats when Blood Magic is allocated
+
+### 1.3.26 - 2017/04/08
+ * Modifiers to Area of Effect of Aura Skills now correctly apply to curses supported by Blasphemy
+ * Corrected the implicits on Maraketh One-Handed Swords (thanks sherardy)
+
+### 1.3.25 - 2017/04/06
+ * You can now export and import builds directly to/from Pastebin.com links
+ * Added support for the "Claw X also apply to Unarmed" modifiers on Rigwald's Curse
+ * The conditional penetration modifier on imported copies of The Wise Oak should now be recognised correctly
+
+### 1.3.24 - 2017/04/05
+This update adds support for Life/Mana Leech and Life/Mana/ES Gain on Hit:
+ * All sources of Leech and Gain on Hit are supported, including "Damage dealt by your Totems is Leeched to you"
+ * For skills with a known hit rate (i.e skills that show DPS instead of Average Damage), the combined rate of recovery
+   from Leech and Gain on Hit is displayed in the sidebar
+ * For other skills, the total amount leeched/gained from one hit is displayed instead
+ * Detailed breakdowns of Leech and Gain on Hit can be found in the new "Leech & Gain on Hit" section in the Calcs tab
+ Other changes:
+ * Added support for the additional Siege Ballista totems modifier on Iron Commander
+ * The "%Inc Armour from Tree" and "%Inc Evasion from Tree" sidebar stats now include "increased Evasion Rating and Armour"
+ * Various minor tweaks and fixes
+
+### 1.3.23 - 2017/03/31
+ * Helmets and Boots can now be enchanted via the new "Apply Enchantment..." button that appears when viewing the item
+ * Added support for more helmet enchants; the vast majority of them should now work
+ * Added support for the conditional penetration stat on The Wise Oak
+ * Corrected the base of Lycosidae
+ * The quality bonus on Blood Rage now applies correctly
+ 
+### 1.3.22 - 2017/03/28
+ * The sidebar can now displays two Crit Chance values:
+    1. Crit Chance:
+	   * This is the skill's "real" crit chance, as displayed in the in-game character sheet
+	   * If your crit chance is capped, this value will always be 95%, unlike your effective crit chance (which can be lower)
+	2. Effective Crit Chance:
+	   * This is the value previously shown as "Crit Chance"
+	   * This estimates your true crit chance, factoring in accuracy and "Crit Chance is Lucky"
+ * Added an option to the Configuration tab for "Are you Leeching?" 
+ * Essence Drain now uses "Average Damage" mode
+ * Phasing is now enabled automatically if you have Quartz Infusion and maximum frenzy charges
+ * The Red/Green/Blue Nightmare jewels now correctly apply to the conditional resistance stats in the Sanctuary cluster
+ * Corrected the crit chance modifier on Pre-2.0.0 Windripper
+ * Updated "The Oak" to mirror the changes to Springleaf in 2.6
+ * The program should now correctly prompt to save the current build before updating
+ 
+### 1.3.21 - 2017/03/20
+With this update, the handling of buffs and debuffs has been improved:
+ * Having multiple copies of the same flask or buff/debuff skill active is now handled correctly
+   * When multiple copies are present, the highest value of each stat is used
+ * The enemy curse limit is now calculated and respected; when the limit is exceeded:
+   * Blasphemy curses take priority over other curses
+   * The Vulnerability aura from Witchfire Brew takes priority over non-Blasphemy curses
+   * Otherwise, curses are prioritised according to their ordering in the Skills tab
+Other changes:
+ * Punishment is now supported (this was mostly made possible by the buff overhaul)
+ * Generosity is now supported
+ * Block Chance Reduction is now supported (although it has no effect)
+ * Several uniques have received minor corrections to the wording of stats
+
+### 1.3.20 - 2017/03/17
+ * Added skill parts to Vaal Fireball that match those on Fireball
+ * Reverted the rounding change from the previous update, as the change in the game has been reverted also
+ * Fixed issue that caused passive node stats to lose tags (such as conditions) when converted by certain jewels
+ * Corrected the implicits on many item bases that received undocumented buffs in 2.6
+ * Various minor tweaks and fixes
+
+### 1.3.19 - 2017/03/09
+ * Changed the rounding method for flask/aura/buff/curse effect to reflect the change in 2.6
+ * Relics can now be imported, and copied from in-game
+ * Fixed behaviour of the "Both slashes" skill part of Lacerate when only using one weapon
+ * Corrected the implicits of Maraketh sceptres
+ * Various minor tweaks and fixes
+
 ### 1.3.18 - 2017/03/05
  * Added support for threshold jewels:
     * Most of the relevant modifiers from threshold jewels should now be supported

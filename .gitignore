@@ -3,8 +3,13 @@
 
 Settings.xml
 *.cfg
+*.json
 TreeData/
 Builds/
+Export/Bases/*.lua
+Export/Skills/*.lua
+Export/Minions/*.lua
+Export/stat_descriptions.txt
 
 # User-specific files
 *.suo
@@ -249,3 +254,10 @@ ModelManifest.xml
 # FAKE - F# Make
 .fake/
 *.lnk
+/Export/.~lock.data.ods#
+/Export/data.ods
+/Export/lol.csv
+/Export/test.lua
+*.csv#
+/Export/passive_skill_stat_descriptions.txt
+/Export/passive_skill_aura_stat_descriptions.txt

@@ -1,0 +1,13 @@
+-- Item data (c) Grinding Gear Games
+local itemBases = ...
+
+#type One Handed Mace
+#baseTags weapon onehand mace one_hand_weapon
+#baseMatch Metadata/Items/Weapons/OneHandWeapons/OneHandMaces/OneHandMace
+
+#type Sceptre
+#baseMatch Metadata/Items/Weapons/OneHandWeapons/OneHandMaces/Sceptre
+
+#type Two Handed Mace
+#baseTags weapon twohand mace two_hand_weapon
+#baseMatch Metadata/Items/Weapons/TwoHandWeapons/TwoHandMaces/TwoHandMace

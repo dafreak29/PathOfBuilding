@@ -54,8 +54,9 @@ local EditClass = common.NewClass("EditControl", "ControlHost", "Control", "Undo
 	self.selCol = "^0"
 	self.selBGCol = "^xBBBBBB"
 	self.blinkStart = GetTime()
-	if self.filter == "%D" then
+	if self.filter == "%D" or self.filter == "^%-%d" then
 		-- Add +/- buttons for integer number edits
+		self.isNumeric = true
 		local function buttonSize()
 			local width, height = self:GetSize()
 			return height - 4
@@ -434,6 +435,10 @@ function EditClass:OnKeyDown(key, doubleClick)
 	elseif key == "v" and ctrl then
 		local text = Paste()
 		if text then
+			if self.pasteFilter then
+				text = self.pasteFilter(text)
+			end
+			text = text:gsub("[\128-\255]","?")
 			if self.sel and self.sel ~= self.caret then
 				self:ReplaceSel(text)
 			else
@@ -564,7 +569,7 @@ function EditClass:OnKeyUp(key)
 		if self.drag then
 			self.drag = false
 		end
-	elseif self.filter == "%D" then
+	elseif self.isNumeric then
 		local cur = tonumber(self.buf)
 		if key == "WHEELUP" or key == "UP" then
 			if cur then
@@ -573,7 +578,7 @@ function EditClass:OnKeyUp(key)
 				self:SetText("1", true)
 			end
 		elseif key == "WHEELDOWN" or key == "DOWN" then
-			if cur and cur > 0 then
+			if cur and (self.filter ~= "%D" or cur > 0 )then
 				self:SetText(tostring(cur - 1), true)
 			else
 				self:SetText("0", true)

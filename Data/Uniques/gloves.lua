@@ -86,7 +86,7 @@ Requires Level 24, 17 Dex
 {variant:2}+(40-50) to Evasion Rating
 {variant:1}+(10-20)% to Cold Resistance
 {variant:2}+(20-30)% to Cold Resistance
-{variant:2}Adds (5-7) to (13-15) Cold Damage
+{variant:2}Adds (5-7) to (13-15) Cold Damage to Spells and Attacks
 {variant:1}25% of Physical Damage Converted to Cold Damage
 {variant:2}50% of Physical Damage Converted to Cold Damage
 Reflects 10 Cold Damage to Melee Attackers
@@ -102,7 +102,7 @@ Requires Level 9, 17 Dex
 {variant:2}+(40-50) to Evasion Rating
 {variant:1}+(10-20)% to Cold Resistance
 {variant:2}+(20-30)% to Cold Resistance
-{variant:2}Adds (5-7) to (13-15) Cold Damage
+{variant:2}Adds (5-7) to (13-15) Cold Damage to Spells and Attacks
 {variant:1}25% of Physical Damage Converted to Cold Damage
 {variant:2}50% of Physical Damage Converted to Cold Damage
 Reflects 10 Cold Damage to Melee Attackers
@@ -199,6 +199,17 @@ Requires Level 15
 Recover 20% of your Maximum Life on Rampage
 Gain 5 Souls for Vaal Skills on Rampage
 Rampage
+]],[[
+Haemophilia
+Serpentscale Gauntlets
+Requires Level 43, 34 Str, 34 Dex
++(20–30) to Strength 
+25% increased Damage over Time 
+Attacks have 25% chance to cause Bleeding 
+(25–40)% increased Attack Damage against Bleeding Enemies 
+Bleeding Enemies you Kill Explode, dealing 5% of
+their Maximum Life as Physical Damage 
+25% reduced Bleed duration
 ]],[[
 Slitherpinch
 Bronzescale Gauntlets

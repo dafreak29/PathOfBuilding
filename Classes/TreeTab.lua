@@ -21,17 +21,17 @@ local TreeTabClass = common.NewClass("TreeTab", "ControlHost", function(self, bu
 	self:SetActiveSpec(1)
 
 	self.anchorControls = common.New("Control", nil, 0, 0, 0, 20)
-	self.controls.specSelect = common.New("DropDownControl", {"LEFT",self.anchorControls,"RIGHT"}, 0, 0, 150, 20, nil, function(sel, selVal)
-		if self.specList[sel] then
+	self.controls.specSelect = common.New("DropDownControl", {"LEFT",self.anchorControls,"RIGHT"}, 0, 0, 150, 20, nil, function(index, value)
+		if self.specList[index] then
 			self.build.modFlag = true
-			self:SetActiveSpec(sel)
+			self:SetActiveSpec(index)
 		else
 			self:OpenSpecManagePopup()
 		end
 	end)
-	self.controls.specSelect.tooltipFunc = function(mode, sel, selVal)
+	self.controls.specSelect.tooltipFunc = function(mode, selIndex, selVal)
 		if mode ~= "OUT" then
-			local spec = self.specList[sel]
+			local spec = self.specList[selIndex]
 			if spec then
 				local used, ascUsed, sockets = spec:CountAllocNodes()
 				main:AddTooltipLine(16, "Class: "..spec.curClassName)
@@ -40,11 +40,26 @@ local TreeTabClass = common.NewClass("TreeTab", "ControlHost", function(self, bu
 				if sockets > 0 then
 					main:AddTooltipLine(16, "Jewel sockets: "..sockets)
 				end
-				if sel ~= self.activeSpec then
+				if selIndex ~= self.activeSpec then
 					local calcFunc, calcBase = self.build.calcsTab:GetMiscCalculator()
 					if calcFunc then
 						local output = calcFunc({ spec = spec })
 						self.build:AddStatComparesToTooltip(calcBase, output, "^7Switching to this tree will give you:")
+					end
+					if spec.curClassId == self.build.spec.curClassId then
+						local respec = 0
+						for nodeId, node in pairs(self.build.spec.allocNodes) do
+							if node.type ~= "classStart" and node.type ~= "ascendClassStart" and not spec.allocNodes[nodeId] then
+								if node.ascendancyName then
+									respec = respec + 5
+								else
+									respec = respec + 1
+								end
+							end
+						end
+						if respec > 0 then
+							main:AddTooltipLine(16, "^7Switching to this tree requires "..respec.." refund points.")
+						end
 					end
 				end
 			end
@@ -66,10 +81,13 @@ local TreeTabClass = common.NewClass("TreeTab", "ControlHost", function(self, bu
 	self.controls.treeSearch = common.New("EditControl", {"LEFT",self.controls.export,"RIGHT"}, 8, 0, 300, 20, "", "Search", "%c%(%)", 100, function(buf)
 		self.viewer.searchStr = buf
 	end)
-	self.controls.treeHeatMap = common.New("CheckBoxControl", {"LEFT",self.controls.treeSearch,"RIGHT"}, 130, 0, 20, "Show node power:", function(state)	
+	self.controls.treeHeatMap = common.New("CheckBoxControl", {"LEFT",self.controls.treeSearch,"RIGHT"}, 130, 0, 20, "Show Node Power:", function(state)	
 		self.viewer.showHeatMap = state
 	end)
-	self.controls.treeHeatMap.tooltip = "When enabled, an estimate of the offensive and defensive strength of\neach unallocated passive is calculated and displayed visually.\nOffensive power shows as red, defensive power as blue."
+	self.controls.treeHeatMap.tooltip = function()
+		local offCol, defCol = main.nodePowerTheme:match("(%a+)/(%a+)")
+		return "When enabled, an estimate of the offensive and defensive strength of\neach unallocated passive is calculated and displayed visually.\nOffensive power shows as "..offCol:lower()..", defensive power as "..defCol:lower().."."
+	end
 end)
 
 function TreeTabClass:Draw(viewPort, inputEvents)
@@ -94,7 +112,7 @@ function TreeTabClass:Draw(viewPort, inputEvents)
 	local treeViewPort = { x = viewPort.x, y = viewPort.y, width = viewPort.width, height = viewPort.height - 32 }
 	self.viewer:Draw(self.build, treeViewPort, inputEvents)
 
-	self.controls.specSelect.sel = self.activeSpec
+	self.controls.specSelect.selIndex = self.activeSpec
 	wipeTable(self.controls.specSelect.list)
 	for id, spec in ipairs(self.specList) do
 		t_insert(self.controls.specSelect.list, spec.title or "Default")
@@ -165,6 +183,7 @@ function TreeTabClass:Save(xml)
 		spec:Save(child)
 		t_insert(xml, child)
 	end
+	self.modFlag = false
 end
 
 function TreeTabClass:SetActiveSpec(specId)
@@ -201,74 +220,91 @@ function TreeTabClass:OpenSpecManagePopup()
 end
 
 function TreeTabClass:OpenImportPopup()
-	local treeLink = ""
-	local showMsg
-	main:OpenPopup(380, 110, "Import Tree", {
-		common.New("LabelControl", nil, 0, 20, 0, 16, "Enter passive tree link:"),
-		edit = common.New("EditControl", nil, 0, 40, 350, 18, "", nil, nil, nil, function(buf)
-			treeLink = buf 
-			showMsg = nil
-		end),
-		common.New("LabelControl", nil, 0, 58, 0, 16, function() return showMsg or "" end),
-		import = common.New("ButtonControl", nil, -45, 80, 80, 20, "Import", function()
-			if #treeLink > 0 then
-				if treeLink:match("poeurl%.com/") then
-					local curl = require("lcurl")
-					local easy = curl.easy()
-					easy:setopt_url(treeLink)
-					easy:setopt_writefunction(function(data)
-						return true
-					end)
-					easy:perform()
-					local redirect = easy:getinfo(curl.INFO_REDIRECT_URL)
-					easy:close()
-					if not redirect or redirect == treeLink then
-						showMsg = "^1Failed to resolve PoEURL link"
-						return
-					end
-					treeLink = redirect
-				end
-				local errMsg = self.build.spec:DecodeURL(treeLink)
-				if errMsg then
-					showMsg = "^1"..errMsg
-				else
-					self.build.spec:AddUndoState()
-					self.build.buildFlag = true
-					main:ClosePopup()
-				end
-			end
-		end),
-		common.New("ButtonControl", nil, 45, 80, 80, 20, "Cancel", function()
+	local controls = { }
+	local function decodeTreeLink(treeLink)
+		local errMsg = self.build.spec:DecodeURL(treeLink)
+		if errMsg then
+			controls.msg.label = "^1"..errMsg
+		else
+			self.build.spec:AddUndoState()
+			self.build.buildFlag = true
 			main:ClosePopup()
-		end),
-	}, "import", "edit")
+		end
+	end
+	controls.editLabel = common.New("LabelControl", nil, 0, 20, 0, 16, "Enter passive tree link:")
+	controls.edit = common.New("EditControl", nil, 0, 40, 350, 18, "", nil, nil, nil, function(buf)
+		controls.msg.label = ""
+	end)
+	controls.msg = common.New("LabelControl", nil, 0, 58, 0, 16, "")
+	controls.import = common.New("ButtonControl", nil, -45, 80, 80, 20, "Import", function()
+		local treeLink = controls.edit.buf
+		if #treeLink == 0 then
+			return
+		end
+		if treeLink:match("poeurl%.com/") then
+			controls.import.enabled = false
+			controls.msg.label = "Resolving PoEURL link..."
+			local id = LaunchSubScript([[
+				local treeLink = ...
+				local curl = require("lcurl.safe")
+				local easy = curl.easy()
+				easy:setopt_url(treeLink)
+				easy:setopt_writefunction(function(data)
+					return true
+				end)
+				easy:perform()
+				local redirect = easy:getinfo(curl.INFO_REDIRECT_URL)
+				easy:close()
+				if not redirect or redirect:match("poeurl%.com/") then
+					return nil, "Failed to resolve PoEURL link"
+				end
+				return redirect
+			]], "", "", treeLink)
+			if id then
+				launch:RegisterSubScript(id, function(treeLink, errMsg)
+					if errMsg then
+						controls.msg.label = "^1"..errMsg
+						controls.import.enabled = true
+					else
+						decodeTreeLink(treeLink)
+					end
+				end)
+			end
+		else
+			decodeTreeLink(treeLink)
+		end
+	end)
+	controls.cancel = common.New("ButtonControl", nil, 45, 80, 80, 20, "Cancel", function()
+		main:ClosePopup()
+	end)
+	main:OpenPopup(380, 110, "Import Tree", controls, "import", "edit")
 end
 
 function TreeTabClass:OpenExportPopup()
 	local treeLink = self.build.spec:EncodeURL("https://www.pathofexile.com/passive-skill-tree/")
 	local popup
-	popup = main:OpenPopup(380, 100, "Export Tree", {
-		common.New("LabelControl", nil, 0, 20, 0, 16, "Passive tree link:"),
-		edit = common.New("EditControl", nil, 0, 40, 350, 18, treeLink, nil, "%Z"),
-		shrink = common.New("ButtonControl", nil, -90, 70, 140, 20, "Shrink with PoEURL", function()
-			popup.controls.shrink.enabled = false
-			popup.controls.shrink.label = "Shrinking..."
-			launch:DownloadPage("http://poeurl.com/shrink.php?url="..treeLink, function(page, errMsg)
-				popup.controls.shrink.label = "Done"
-				if errMsg or not page:match("%S") then
-					main:OpenMessagePopup("PoEURL Shortener", "Failed to get PoEURL link. Try again later.")
-				else
-					treeLink = "http://poeurl.com/"..page
-					popup.controls.edit:SetText(treeLink)
-					popup:SelectControl(popup.controls.edit)
-				end
-			end)
-		end),
-		common.New("ButtonControl", nil, 30, 70, 80, 20, "Copy", function()
-			Copy(treeLink)
-		end),
-		done = common.New("ButtonControl", nil, 120, 70, 80, 20, "Done", function()
-			main:ClosePopup()
-		end),
-	}, "done", "edit")
+	local controls = { }
+	controls.label = common.New("LabelControl", nil, 0, 20, 0, 16, "Passive tree link:")
+	controls.edit = common.New("EditControl", nil, 0, 40, 350, 18, treeLink, nil, "%Z")
+	controls.shrink = common.New("ButtonControl", nil, -90, 70, 140, 20, "Shrink with PoEURL", function()
+		controls.shrink.enabled = false
+		controls.shrink.label = "Shrinking..."
+		launch:DownloadPage("http://poeurl.com/shrink.php?url="..treeLink, function(page, errMsg)
+			controls.shrink.label = "Done"
+			if errMsg or not page:match("%S") then
+				main:OpenMessagePopup("PoEURL Shortener", "Failed to get PoEURL link. Try again later.")
+			else
+				treeLink = "http://poeurl.com/"..page
+				controls.edit:SetText(treeLink)
+				popup:SelectControl(controls.edit)
+			end
+		end)
+	end)
+	controls.copy = common.New("ButtonControl", nil, 30, 70, 80, 20, "Copy", function()
+		Copy(treeLink)
+	end)
+	controls.done = common.New("ButtonControl", nil, 120, 70, 80, 20, "Done", function()
+		main:ClosePopup()
+	end)
+	popup = main:OpenPopup(380, 100, "Export Tree", controls, "done", "edit")
 end
